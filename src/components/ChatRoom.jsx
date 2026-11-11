@@ -101,7 +101,9 @@ export default function ChatRoom({ room, onLeave }) {
     return localStorage.getItem('quickchat_sound') !== 'false';
   });
   const [wallpaperTheme, setWallpaperTheme] = useState(() => {
-    return localStorage.getItem('quickchat_chat_wallpaper') || 'default';
+    const saved = localStorage.getItem('quickchat_chat_wallpaper') || 'default';
+    const exists = CHAT_THEMES.some(t => t.id === saved);
+    return exists ? saved : 'default';
   });
 
   const lastSentTimeRef = useRef(0);

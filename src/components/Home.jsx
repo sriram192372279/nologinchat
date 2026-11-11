@@ -358,7 +358,7 @@ export default function Home({ onCreateRoom, onJoinRoom, inviteCode }) {
             Audio &amp; Themes
           </h3>
           <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed font-normal">
-            Web Audio synthesized sound effects, 6 immersive live chat wallpapers, confetti explosions, and quick reactions.
+            Web Audio synthesized sound effects, 3 curated chat themes, confetti explosions, and quick reactions.
           </p>
         </div>
       </div>
