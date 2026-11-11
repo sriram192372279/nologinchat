@@ -8,10 +8,7 @@ import {
   Hash,
   Plus,
   Loader2,
-  ExternalLink,
-  Lock,
-  Zap,
-  ShieldCheck
+  ExternalLink
 } from 'lucide-react';
 
 export default function Home({ onCreateRoom, onJoinRoom, inviteCode }) {
@@ -48,7 +45,7 @@ export default function Home({ onCreateRoom, onJoinRoom, inviteCode }) {
     if (e) e.preventDefault();
     const cleanCode = roomCodeInput.replace(/\D/g, '').trim();
     if (!cleanCode || cleanCode.length !== 4) {
-      addToast('Please enter all 4 digits', 'error');
+      addToast('Enter 4-digit code', 'error');
       return;
     }
 
@@ -69,10 +66,10 @@ export default function Home({ onCreateRoom, onJoinRoom, inviteCode }) {
     try {
       await handleEnsureAuth();
       confetti({
-        particleCount: 70,
-        spread: 70,
+        particleCount: 50,
+        spread: 60,
         origin: { y: 0.6 },
-        colors: ['#6366f1', '#a855f7', '#06b6d4', '#10b981']
+        colors: ['#6366f1', '#a855f7', '#06b6d4']
       });
       await onCreateRoom(customRoomName.trim());
     } catch (err) {
@@ -86,7 +83,7 @@ export default function Home({ onCreateRoom, onJoinRoom, inviteCode }) {
     setAuthSubmitting(true);
     try {
       await loginWithGoogle();
-      addToast('Authenticated with Google', 'success');
+      addToast('Signed in with Google', 'success');
     } catch (err) {
       addToast(err.message || 'Google sign-in failed.', 'error');
     } finally {
@@ -95,98 +92,80 @@ export default function Home({ onCreateRoom, onJoinRoom, inviteCode }) {
   };
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center px-4 py-8 sm:py-14 max-w-md mx-auto w-full relative z-10">
-      {/* ── Simple, Clean Hero Header ─────────────────── */}
-      <div className="text-center mb-8 animate-fade-up">
-        <h1 className="font-display font-extrabold text-3xl sm:text-4xl tracking-tight text-white">
-          Quick<span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">Chat</span>
-        </h1>
-        <p className="text-xs sm:text-sm text-slate-400 mt-2 font-medium">
-          Instant ephemeral rooms with a 4-digit code. Zero login required.
-        </p>
-      </div>
-
+    <div className="flex-1 flex flex-col items-center justify-center px-4 py-8 max-w-sm mx-auto w-full relative z-10">
       {/* Firebase setup notice */}
       {authError && (
-        <div className="w-full mb-5 p-4 rounded-2xl bg-amber-950/40 border border-amber-800/60 text-xs text-amber-200 shadow-md">
-          <div className="font-bold mb-1.5 flex items-center justify-between text-sm">
-            <span>Firebase Authentication Required</span>
+        <div className="w-full mb-4 p-3.5 rounded-2xl bg-amber-950/40 border border-amber-800/60 text-xs text-amber-200">
+          <div className="font-bold mb-1 flex items-center justify-between">
+            <span>Firebase Auth Setup Required</span>
             <a
               href="https://console.firebase.google.com/project/dialy-water/authentication/providers"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-1 text-indigo-400 font-bold underline hover:no-underline font-mono"
+              className="inline-flex items-center gap-1 text-indigo-400 font-bold underline font-mono text-xs"
             >
-              Console <ExternalLink className="w-3.5 h-3.5" />
+              Console <ExternalLink className="w-3 h-3" />
             </a>
           </div>
-          <p className="leading-relaxed opacity-90">
-            In Firebase Console &gt; Authentication, enable <strong>Anonymous</strong> &amp; <strong>Google</strong> sign-in.
+          <p className="opacity-90 leading-relaxed text-[11px]">
+            Enable <strong>Anonymous</strong> &amp; <strong>Google</strong> in Firebase Console.
           </p>
         </div>
       )}
 
-      {/* ── Simple Main Card ─────────────────────────── */}
+      {/* ── Pure, Minimal Card ─────────────────────────── */}
       <div className="w-full glass-panel rounded-3xl shadow-luxury overflow-hidden animate-fade-up">
         {/* Navigation Tabs */}
-        <div className="flex p-1.5 bg-slate-900/70 border-b border-white/5">
+        <div className="flex p-1.5 bg-slate-900/80 border-b border-white/5">
           <button
             type="button"
             onClick={() => setActiveTab('join')}
-            className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-xs sm:text-sm font-bold rounded-2xl transition-all duration-150 cursor-pointer ${
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-bold rounded-2xl transition-all duration-150 cursor-pointer ${
               activeTab === 'join'
                 ? 'bg-slate-800 text-white shadow-md'
                 : 'text-slate-400 hover:text-white'
             }`}
           >
-            <Hash className="w-4 h-4 text-indigo-400" />
-            <span>Join with Code</span>
+            <Hash className="w-3.5 h-3.5 text-indigo-400" />
+            <span>Join</span>
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab('create')}
-            className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-xs sm:text-sm font-bold rounded-2xl transition-all duration-150 cursor-pointer ${
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-bold rounded-2xl transition-all duration-150 cursor-pointer ${
               activeTab === 'create'
                 ? 'bg-slate-800 text-white shadow-md'
                 : 'text-slate-400 hover:text-white'
             }`}
           >
-            <Plus className="w-4 h-4 text-purple-400" />
-            <span>Create Room</span>
+            <Plus className="w-3.5 h-3.5 text-purple-400" />
+            <span>Create</span>
           </button>
         </div>
 
         {/* Tab Body */}
-        <div className="p-6">
+        <div className="p-5 sm:p-6">
           {activeTab === 'join' ? (
             <form onSubmit={handleJoinSubmit} className="space-y-4">
-              <div className="text-center">
-                <label className="block text-xs font-mono font-bold text-slate-400 uppercase tracking-wider mb-2.5">
-                  Enter 4-Digit Room Code
-                </label>
-                <DigitCodeInput
-                  value={roomCodeInput}
-                  onChange={setRoomCodeInput}
-                  onComplete={() => {
-                    setTimeout(handleJoinSubmit, 150);
-                  }}
-                  autoFocus={true}
-                />
-              </div>
+              <DigitCodeInput
+                value={roomCodeInput}
+                onChange={setRoomCodeInput}
+                onComplete={() => {
+                  setTimeout(handleJoinSubmit, 150);
+                }}
+                autoFocus={true}
+              />
 
               {!currentUser && (
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 mb-1.5">
-                    Your nickname
-                  </label>
                   <input
                     type="text"
                     value={guestNameInput}
                     onChange={(e) => setGuestNameInput(e.target.value)}
                     maxLength={25}
-                    placeholder="e.g. Alex, Sam, Dev"
-                    className="w-full text-sm font-semibold py-2.5 px-3.5 rounded-xl bg-slate-900/90 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-500/10 transition-all"
+                    placeholder="Your name"
+                    className="w-full text-xs font-semibold py-2.5 px-3.5 rounded-xl bg-slate-900 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/10 transition-all"
                   />
                 </div>
               )}
@@ -194,14 +173,14 @@ export default function Home({ onCreateRoom, onJoinRoom, inviteCode }) {
               <button
                 type="submit"
                 disabled={submitting || roomCodeInput.length !== 4}
-                className="w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 hover:from-indigo-700 hover:to-cyan-600 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-bold flex items-center justify-center gap-2 transition-all active:scale-[0.98] cursor-pointer shadow-lg shadow-indigo-600/25"
+                className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 hover:from-indigo-700 hover:to-cyan-600 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-bold flex items-center justify-center gap-2 transition-all active:scale-[0.98] cursor-pointer shadow-md shadow-indigo-600/20"
               >
                 {submitting ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
                 ) : (
                   <>
-                    <span>Enter Room</span>
-                    <ArrowRight className="w-4 h-4" />
+                    <span>Join Room</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
                   </>
                 )}
               </button>
@@ -209,35 +188,26 @@ export default function Home({ onCreateRoom, onJoinRoom, inviteCode }) {
           ) : (
             <form onSubmit={handleCreateSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-300 mb-1.5">
-                  Room title <span className="font-normal text-slate-500">(optional)</span>
-                </label>
                 <input
                   type="text"
                   value={customRoomName}
                   onChange={(e) => setCustomRoomName(e.target.value)}
                   maxLength={40}
-                  placeholder="e.g. Coffee Break, Team Standup"
+                  placeholder="Room title (optional)"
                   autoFocus
-                  className="w-full text-sm font-semibold py-2.5 px-3.5 rounded-xl bg-slate-900/90 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-500/10 transition-all"
+                  className="w-full text-xs font-semibold py-2.5 px-3.5 rounded-xl bg-slate-900 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/10 transition-all"
                 />
-                <p className="text-[11px] font-medium text-slate-400 mt-1.5">
-                  Generates an instant 4-digit code (e.g. #7829)
-                </p>
               </div>
 
               {!currentUser && (
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 mb-1.5">
-                    Your nickname
-                  </label>
                   <input
                     type="text"
                     value={guestNameInput}
                     onChange={(e) => setGuestNameInput(e.target.value)}
                     maxLength={25}
-                    placeholder="e.g. Alex, Sam, Dev"
-                    className="w-full text-sm font-semibold py-2.5 px-3.5 rounded-xl bg-slate-900/90 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-500/10 transition-all"
+                    placeholder="Your name"
+                    className="w-full text-xs font-semibold py-2.5 px-3.5 rounded-xl bg-slate-900 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/10 transition-all"
                   />
                 </div>
               )}
@@ -245,14 +215,14 @@ export default function Home({ onCreateRoom, onJoinRoom, inviteCode }) {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-bold flex items-center justify-center gap-2 transition-all active:scale-[0.98] cursor-pointer shadow-lg shadow-purple-600/25"
+                className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-bold flex items-center justify-center gap-2 transition-all active:scale-[0.98] cursor-pointer shadow-md shadow-purple-600/20"
               >
                 {submitting ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
                 ) : (
                   <>
-                    <span>Generate Code &amp; Launch</span>
-                    <ArrowRight className="w-4 h-4" />
+                    <span>Create Room</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
                   </>
                 )}
               </button>
@@ -260,23 +230,23 @@ export default function Home({ onCreateRoom, onJoinRoom, inviteCode }) {
           )}
         </div>
 
-        {/* Card Footer / Google Auth */}
+        {/* Google Auth Footer */}
         {!currentUser && (
-          <div className="px-6 py-3.5 border-t border-white/5 bg-slate-950/70 flex items-center justify-between text-xs">
-            <span className="text-slate-400 font-medium">
+          <div className="px-5 py-3 border-t border-white/5 bg-slate-950/60 flex items-center justify-between text-xs">
+            <span className="text-slate-500 text-[11px]">
               Or sign in with:
             </span>
             <button
               type="button"
               onClick={handleGoogleSignIn}
               disabled={authSubmitting}
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl border border-white/10 bg-slate-900 text-white hover:bg-slate-800 text-xs font-bold transition-all shadow-sm cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 bg-slate-900 text-white hover:bg-slate-800 text-[11px] font-bold transition-all cursor-pointer"
             >
               {authSubmitting ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                <Loader2 className="w-3 h-3 animate-spin" />
               ) : (
                 <>
-                  <svg className="w-3.5 h-3.5" viewBox="0 0 24 24">
+                  <svg className="w-3 h-3" viewBox="0 0 24 24">
                     <path
                       fill="#4285F4"
                       d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.65v3h3.88c2.27-2.09 3.66-5.17 3.66-9.09z"
@@ -300,21 +270,6 @@ export default function Home({ onCreateRoom, onJoinRoom, inviteCode }) {
             </button>
           </div>
         )}
-      </div>
-
-      {/* Trust Badges Simple Row */}
-      <div className="flex items-center justify-center gap-4 text-xs font-mono text-slate-400 mt-6">
-        <span className="flex items-center gap-1.5">
-          <Lock className="w-3.5 h-3.5 text-slate-400" /> Private Room
-        </span>
-        <span>&bull;</span>
-        <span className="flex items-center gap-1.5">
-          <Zap className="w-3.5 h-3.5 text-emerald-400" /> Realtime
-        </span>
-        <span>&bull;</span>
-        <span className="flex items-center gap-1.5">
-          <ShieldCheck className="w-3.5 h-3.5 text-indigo-400" /> No Tracking
-        </span>
       </div>
     </div>
   );
