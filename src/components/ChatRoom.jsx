@@ -10,8 +10,6 @@ import {
 } from '../services/chatService';
 import { playSendSound, playReceiveSound } from '../utils/soundEffects';
 import MembersModal from './MembersModal';
-import WallpaperSelector from './WallpaperSelector';
-import { CHAT_THEMES } from '../constants/chatThemes';
 import {
   ArrowDown,
   Copy,
@@ -32,12 +30,12 @@ const EMOJI_BAR = ['👋', '❤️', '🔥', '😂', '🎉', '👍', '🚀', '�
 
 // High-contrast, vibrant participant palette
 const USER_PALETTE = [
-  { text: 'text-indigo-600 dark:text-indigo-400', avatar: 'from-indigo-600 to-purple-600' },
-  { text: 'text-emerald-600 dark:text-emerald-400', avatar: 'from-emerald-500 to-teal-600' },
-  { text: 'text-rose-600 dark:text-rose-400', avatar: 'from-rose-500 to-pink-600' },
-  { text: 'text-amber-600 dark:text-amber-400', avatar: 'from-amber-500 to-orange-600' },
-  { text: 'text-cyan-600 dark:text-cyan-400', avatar: 'from-cyan-500 to-blue-600' },
-  { text: 'text-fuchsia-600 dark:text-fuchsia-400', avatar: 'from-fuchsia-600 to-purple-600' },
+  { text: 'text-indigo-400', avatar: 'from-indigo-600 to-purple-600' },
+  { text: 'text-emerald-400', avatar: 'from-emerald-500 to-teal-600' },
+  { text: 'text-rose-400', avatar: 'from-rose-500 to-pink-600' },
+  { text: 'text-amber-400', avatar: 'from-amber-500 to-orange-600' },
+  { text: 'text-cyan-400', avatar: 'from-cyan-500 to-blue-600' },
+  { text: 'text-fuchsia-400', avatar: 'from-fuchsia-600 to-purple-600' },
 ];
 
 function getUserColorStyle(username = '') {
@@ -100,11 +98,6 @@ export default function ChatRoom({ room, onLeave }) {
   const [soundEnabled, setSoundEnabled] = useState(() => {
     return localStorage.getItem('quickchat_sound') !== 'false';
   });
-  const [wallpaperTheme, setWallpaperTheme] = useState(() => {
-    const saved = localStorage.getItem('quickchat_chat_wallpaper') || 'default';
-    const exists = CHAT_THEMES.some(t => t.id === saved);
-    return exists ? saved : 'default';
-  });
 
   const lastSentTimeRef = useRef(0);
   const messagesEndRef = useRef(null);
@@ -113,18 +106,6 @@ export default function ChatRoom({ room, onLeave }) {
   const prevMsgCountRef = useRef(0);
 
   const roomCode = room?.roomCode || room?.id;
-  const activeTheme = CHAT_THEMES.find(t => t.id === wallpaperTheme) || CHAT_THEMES[0];
-
-  const handleSelectTheme = (themeId) => {
-    setWallpaperTheme(themeId);
-    try {
-      localStorage.setItem('quickchat_chat_wallpaper', themeId);
-    } catch (e) {
-      console.warn('Storage error:', e);
-    }
-    const found = CHAT_THEMES.find(t => t.id === themeId);
-    addToast(`Theme applied: ${found?.name || 'Default'}`, 'info', 1500);
-  };
 
   const toggleSound = () => {
     setSoundEnabled(prev => {
@@ -300,11 +281,11 @@ export default function ChatRoom({ room, onLeave }) {
 
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <span className="font-display font-bold text-sm sm:text-base text-slate-900 dark:text-white truncate">
+              <span className="font-display font-bold text-sm sm:text-base text-white truncate">
                 {room?.name || `Room #${roomCode}`}
               </span>
               {room?.createdBy === currentUser?.uid && (
-                <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/30">
+                <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30">
                   <Crown className="w-3 h-3 text-amber-500" /> Host
                 </span>
               )}
@@ -314,42 +295,36 @@ export default function ChatRoom({ room, onLeave }) {
               <button
                 onClick={handleCopyCode}
                 title="Click to copy 4-digit PIN"
-                className="group inline-flex items-center gap-1.5 font-mono text-xs font-bold px-2.5 py-0.5 rounded-lg bg-indigo-500/10 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-500/20 dark:hover:bg-indigo-500/30 transition-all border border-indigo-500/30 cursor-pointer"
+                className="group inline-flex items-center gap-1.5 font-mono text-xs font-bold px-2.5 py-0.5 rounded-lg bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30 transition-all border border-indigo-500/30 cursor-pointer"
               >
                 <span>#{roomCode}</span>
                 {copiedCode ? (
-                  <Check className="w-3 h-3 text-emerald-500" />
+                  <Check className="w-3 h-3 text-emerald-400" />
                 ) : (
-                  <Copy className="w-3 h-3 text-indigo-500 group-hover:scale-110 transition-transform" />
+                  <Copy className="w-3 h-3 text-indigo-400 group-hover:scale-110 transition-transform" />
                 )}
               </button>
               <span className="text-xs text-slate-400 hidden sm:inline">&bull;</span>
-              <span className="text-xs text-slate-500 dark:text-slate-400 hidden sm:inline font-medium">Click PIN to copy</span>
+              <span className="text-xs text-slate-400 hidden sm:inline font-medium">Click to copy</span>
             </div>
           </div>
         </div>
 
         {/* Right: Actions */}
         <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-          {/* Wallpaper Selector */}
-          <WallpaperSelector
-            currentTheme={wallpaperTheme}
-            onSelectTheme={handleSelectTheme}
-          />
-
           {/* Sound Toggle */}
           <button
             onClick={toggleSound}
             title={soundEnabled ? 'Mute sound effects' : 'Enable sound effects'}
-            className="w-9 h-9 rounded-xl flex items-center justify-center text-slate-600 hover:text-indigo-600 dark:text-slate-300 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-white/10 transition-colors cursor-pointer"
+            className="w-9 h-9 rounded-xl flex items-center justify-center text-slate-300 hover:text-indigo-400 hover:bg-slate-800 border border-white/10 transition-colors cursor-pointer"
           >
-            {soundEnabled ? <Volume2 className="w-4 h-4 text-indigo-500" /> : <VolumeX className="w-4 h-4 text-slate-400" />}
+            {soundEnabled ? <Volume2 className="w-4 h-4 text-indigo-400" /> : <VolumeX className="w-4 h-4 text-slate-500" />}
           </button>
 
           {/* Members Button */}
           <button
             onClick={() => setIsMembersModalOpen(true)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 transition-all cursor-pointer shadow-sm active:scale-95"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 transition-all cursor-pointer shadow-sm active:scale-95"
           >
             <span className="flex h-2 w-2 relative">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -364,9 +339,9 @@ export default function ChatRoom({ room, onLeave }) {
           <button
             onClick={handleShareInvite}
             title="Share room invitation"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 border border-slate-300 dark:border-white/10 transition-all cursor-pointer shadow-sm active:scale-95"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-100 border border-white/10 transition-all cursor-pointer shadow-sm active:scale-95"
           >
-            {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Share2 className="w-3.5 h-3.5 text-indigo-500" />}
+            {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Share2 className="w-3.5 h-3.5 text-indigo-400" />}
             <span className="hidden sm:inline">{copiedLink ? 'Copied' : 'Invite'}</span>
           </button>
 
@@ -374,7 +349,7 @@ export default function ChatRoom({ room, onLeave }) {
           <button
             onClick={handleLeaveRoom}
             title="Exit room"
-            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/20 transition-all cursor-pointer active:scale-95"
+            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 transition-all cursor-pointer active:scale-95"
           >
             <LogOut className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Leave</span>
@@ -386,24 +361,24 @@ export default function ChatRoom({ room, onLeave }) {
       <div
         ref={chatContainerRef}
         onScroll={handleScroll}
-        className={`flex-1 overflow-y-auto px-3 sm:px-5 py-4 rounded-3xl border border-slate-200/80 dark:border-white/10 shadow-lg relative flex flex-col space-y-3 transition-colors duration-200 ${activeTheme.wrapperClass}`}
+        className="flex-1 overflow-y-auto px-3 sm:px-5 py-4 rounded-3xl border border-white/10 shadow-lg relative flex flex-col space-y-3 bg-slate-950/85 bg-grid-ambient text-white"
       >
         {messages.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center text-center p-6 my-auto animate-scale-up">
             <div className="w-16 h-16 rounded-3xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-cyan-400 p-[1px] shadow-glow-indigo mb-4">
-              <div className="w-full h-full bg-white dark:bg-slate-900 rounded-[23px] flex items-center justify-center font-mono font-extrabold text-indigo-600 dark:text-indigo-400 text-xl">
+              <div className="w-full h-full bg-slate-900 rounded-[23px] flex items-center justify-center font-mono font-extrabold text-indigo-400 text-xl">
                 #{roomCode}
               </div>
             </div>
-            <h3 className={`font-display font-extrabold text-lg ${activeTheme.isDarkTheme ? 'text-white' : 'text-slate-900 dark:text-white'}`}>
-              Room #{roomCode} is live &amp; ready!
+            <h3 className="font-display font-extrabold text-lg text-white">
+              Room #{roomCode} is live
             </h3>
-            <p className={`text-xs sm:text-sm mt-1 max-w-sm leading-relaxed ${activeTheme.isDarkTheme ? 'text-slate-300' : 'text-slate-500 dark:text-slate-400'}`}>
-              Share the 4-digit PIN <span className="font-mono font-bold text-indigo-400">#{roomCode}</span> with your colleagues or friends to begin.
+            <p className="text-xs sm:text-sm mt-1 max-w-sm leading-relaxed text-slate-400">
+              Share code <span className="font-mono font-bold text-indigo-400">#{roomCode}</span> to chat.
             </p>
 
             <button
-              onClick={() => handleSendMessage('👋 Hello everyone!')}
+              onClick={() => handleSendMessage('👋 Hello!')}
               className="mt-5 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 text-xs font-bold hover:bg-indigo-500/30 transition-all cursor-pointer active:scale-95 shadow-sm"
             >
               <span>Say Hello</span>
@@ -422,11 +397,7 @@ export default function ChatRoom({ room, onLeave }) {
               <div key={msg.id || index} className="w-full">
                 {showDateHeader && (
                   <div className="flex items-center justify-center my-3 select-none">
-                    <span className={`px-3.5 py-1 rounded-full backdrop-blur-md text-[11px] font-mono font-bold shadow-sm border ${
-                      activeTheme.isDarkTheme
-                        ? 'bg-slate-900/90 text-slate-200 border-white/15'
-                        : 'bg-slate-200/90 dark:bg-slate-800/90 text-slate-700 dark:text-slate-300 border-slate-300/60 dark:border-white/10'
-                    }`}>
+                    <span className="px-3.5 py-1 rounded-full backdrop-blur-md text-[11px] font-mono font-bold shadow-sm border bg-slate-900/90 text-slate-300 border-white/10">
                       {formatDateHeader(msg.createdAt)}
                     </span>
                   </div>
@@ -442,7 +413,7 @@ export default function ChatRoom({ room, onLeave }) {
                         {msg.username || 'Anonymous'}
                       </span>
                       {msg.senderId === room?.createdBy && (
-                        <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/30 flex items-center gap-0.5">
+                        <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30 flex items-center gap-0.5">
                           <Crown className="w-2.5 h-2.5 text-amber-500" /> Host
                         </span>
                       )}
@@ -466,7 +437,7 @@ export default function ChatRoom({ room, onLeave }) {
                       className={`rounded-2xl px-4 py-2.5 text-xs sm:text-[14px] leading-relaxed break-words whitespace-pre-wrap select-text shadow-sm ${
                         isMe
                           ? 'bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600 text-white rounded-br-xs font-medium shadow-indigo-600/20'
-                          : `${activeTheme.bubbleOther} rounded-bl-xs border font-medium`
+                          : 'bg-slate-900/95 text-white rounded-bl-xs border border-white/10 font-medium'
                       }`}
                     >
                       {msg.message}
@@ -474,9 +445,7 @@ export default function ChatRoom({ room, onLeave }) {
                   </div>
 
                   {/* Timestamp & Read ticks */}
-                  <div className={`flex items-center gap-1 text-[11px] font-mono mt-1 px-1 ${
-                    activeTheme.isDarkTheme ? 'text-slate-400' : 'text-slate-500 dark:text-slate-400'
-                  } ${isMe ? 'mr-1' : 'ml-10'}`}>
+                  <div className={`flex items-center gap-1 text-[11px] font-mono text-slate-400 mt-1 px-1 ${isMe ? 'mr-1' : 'ml-10'}`}>
                     <span>{formatTimestamp(msg.createdAt)}</span>
                     {isMe && <CheckCheck className="w-3.5 h-3.5 text-cyan-400" />}
                   </div>
@@ -492,7 +461,7 @@ export default function ChatRoom({ room, onLeave }) {
       {showScrollBottom && (
         <button
           onClick={scrollToBottom}
-          className="self-center -mt-10 mb-2 z-20 px-4 py-2 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-bold shadow-xl flex items-center gap-2 hover:scale-105 transition-all transform active:scale-95 cursor-pointer"
+          className="self-center -mt-10 mb-2 z-20 px-4 py-2 rounded-full bg-white text-slate-900 text-xs font-bold shadow-xl flex items-center gap-2 hover:scale-105 transition-all transform active:scale-95 cursor-pointer"
         >
           <ArrowDown className="w-3.5 h-3.5 text-indigo-500" />
           <span>New messages</span>
@@ -501,15 +470,15 @@ export default function ChatRoom({ room, onLeave }) {
 
       {/* Quick Reaction Bar */}
       <div className="flex items-center gap-1.5 px-2 py-1.5 overflow-x-auto no-scrollbar">
-        <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mr-1 flex items-center gap-1">
-          <Smile className="w-3.5 h-3.5 text-indigo-500" /> Quick
+        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mr-1 flex items-center gap-1">
+          <Smile className="w-3.5 h-3.5 text-indigo-400" /> Quick
         </span>
         {EMOJI_BAR.map((emoji) => (
           <button
             key={emoji}
             type="button"
             onClick={() => handleQuickEmoji(emoji)}
-            className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-900/80 hover:bg-slate-200 dark:hover:bg-slate-800 text-base flex items-center justify-center transition-all hover:scale-125 active:scale-95 border border-slate-200 dark:border-white/10 cursor-pointer shrink-0"
+            className="w-8 h-8 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-base flex items-center justify-center transition-all hover:scale-125 active:scale-95 border border-white/10 cursor-pointer shrink-0"
           >
             {emoji}
           </button>
@@ -522,7 +491,7 @@ export default function ChatRoom({ room, onLeave }) {
           e.preventDefault();
           handleSendMessage();
         }}
-        className="glass-panel rounded-2xl p-2 shadow-lg flex items-end gap-2 transition-all focus-within:border-indigo-500 dark:focus-within:border-indigo-400 focus-within:ring-4 focus-within:ring-indigo-500/10"
+        className="glass-panel rounded-2xl p-2 shadow-lg flex items-end gap-2 transition-all focus-within:border-indigo-400 focus-within:ring-4 focus-within:ring-indigo-500/10"
       >
         <div className="flex-1 relative flex items-center">
           <textarea
@@ -537,7 +506,7 @@ export default function ChatRoom({ room, onLeave }) {
             onKeyDown={handleKeyDown}
             maxLength={1000}
             placeholder={`Message #${roomCode}...`}
-            className="w-full resize-none max-h-28 py-2 px-3 text-xs sm:text-[14px] bg-transparent text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none leading-relaxed font-medium"
+            className="w-full resize-none max-h-28 py-2 px-3 text-xs sm:text-[14px] bg-transparent text-white placeholder:text-slate-500 focus:outline-none leading-relaxed font-medium"
           />
         </div>
 
@@ -552,7 +521,7 @@ export default function ChatRoom({ room, onLeave }) {
       </form>
 
       {/* Input keyboard hints */}
-      <div className="flex items-center justify-between px-3 pt-1 text-[11px] font-mono text-slate-400 dark:text-slate-500">
+      <div className="flex items-center justify-between px-3 pt-1 text-[11px] font-mono text-slate-500">
         <span>↵ Return to send &bull; Shift + ↵ for newline</span>
         {inputText.length > 500 && (
           <span>{inputText.length}/1000</span>
