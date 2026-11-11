@@ -5,7 +5,7 @@ import ChatRoom from './components/ChatRoom';
 import { useAuth } from './context/AuthContext';
 import { useToast } from './context/ToastContext';
 import { createRoom, joinRoom } from './services/chatService';
-import { Loader2, Radio, Sparkles } from 'lucide-react';
+import { Loader2, Sparkles } from 'lucide-react';
 
 export default function App() {
   const { currentUser, username, authLoading, loginAsGuest } = useAuth();
@@ -122,9 +122,8 @@ export default function App() {
   // Loading state with luxury glowing spinner
   if (authLoading || restoringSession) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-mesh-light dark:bg-mesh-dark bg-grid-ambient text-slate-900 dark:text-slate-100 relative overflow-hidden">
-        {/* Ambient glow in background */}
-        <div className="absolute w-72 h-72 rounded-full bg-gradient-to-tr from-indigo-600/30 via-purple-600/30 to-cyan-500/30 blur-3xl animate-pulse-glow pointer-events-none" />
+      <div className="min-h-screen flex flex-col items-center justify-center bg-mesh-dark bg-grid-ambient text-slate-100 relative overflow-hidden">
+        <div className="absolute w-72 h-72 rounded-full bg-indigo-600/25 blur-3xl animate-pulse-glow pointer-events-none" />
 
         <div className="relative z-10 flex flex-col items-center gap-4">
           <div className="relative">
@@ -133,17 +132,17 @@ export default function App() {
             </div>
             <span className="absolute -top-1 -right-1 flex h-4 w-4">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-4 w-4 bg-emerald-500 border-2 border-white dark:border-slate-900"></span>
+              <span className="relative inline-flex rounded-full h-4 w-4 bg-emerald-500 border-2 border-slate-900"></span>
             </span>
           </div>
 
           <div className="text-center">
-            <h2 className="font-display font-extrabold text-xl tracking-tight text-slate-900 dark:text-white">
+            <h2 className="font-display font-extrabold text-xl tracking-tight text-white">
               QuickChat
             </h2>
-            <p className="text-xs font-mono font-medium text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-2 justify-center">
-              <Loader2 className="w-3.5 h-3.5 animate-spin text-indigo-500" />
-              <span>Initializing secure edge session...</span>
+            <p className="text-xs font-mono font-medium text-slate-400 mt-1 flex items-center gap-2 justify-center">
+              <Loader2 className="w-3.5 h-3.5 animate-spin text-indigo-400" />
+              <span>Connecting to realtime mesh...</span>
             </p>
           </div>
         </div>
@@ -152,18 +151,18 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-mesh-light dark:bg-mesh-dark bg-grid-ambient text-slate-900 dark:text-slate-100 transition-colors duration-200 relative selection:bg-indigo-600 selection:text-white">
+    <div className="min-h-screen flex flex-col bg-mesh-dark bg-grid-ambient text-slate-100 relative selection:bg-indigo-600 selection:text-white">
       {/* Dynamic ambient background glow circles */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute -top-32 -left-32 w-[550px] h-[550px] bg-indigo-500/[0.12] dark:bg-indigo-600/[0.14] rounded-full blur-[130px] animate-aurora" />
-        <div className="absolute top-1/3 -right-32 w-[500px] h-[500px] bg-purple-500/[0.1] dark:bg-purple-600/[0.13] rounded-full blur-[120px] animate-aurora" style={{ animationDelay: '3s' }} />
-        <div className="absolute -bottom-32 left-1/4 w-[600px] h-[600px] bg-cyan-500/[0.08] dark:bg-cyan-500/[0.1] rounded-full blur-[140px] animate-aurora" style={{ animationDelay: '6s' }} />
+        <div className="absolute -top-32 -left-32 w-[550px] h-[550px] bg-indigo-600/[0.14] rounded-full blur-[130px] animate-aurora" />
+        <div className="absolute top-1/3 -right-32 w-[500px] h-[500px] bg-purple-600/[0.13] rounded-full blur-[120px] animate-aurora" style={{ animationDelay: '3s' }} />
+        <div className="absolute -bottom-32 left-1/4 w-[600px] h-[600px] bg-cyan-500/[0.1] rounded-full blur-[140px] animate-aurora" style={{ animationDelay: '6s' }} />
       </div>
 
-      {/* Luxury Navigation Header */}
+      {/* Header */}
       <Navbar onLeaveRoom={handleLeaveRoom} inRoom={!!activeRoom} />
 
-      {/* Main Content Viewport */}
+      {/* Main Viewport */}
       <main className="flex-1 flex flex-col relative z-10">
         {activeRoom ? (
           <ChatRoom room={activeRoom} onLeave={handleLeaveRoom} />
@@ -176,23 +175,15 @@ export default function App() {
         )}
       </main>
 
-      {/* World-Class SaaS Footer (only shown on home screen, not inside active chat) */}
+      {/* Simple Footer */}
       {!activeRoom && (
-        <footer className="w-full relative z-10 py-6 border-t border-slate-200/60 dark:border-white/5 bg-white/40 dark:bg-slate-950/40 backdrop-blur-md">
-          <div className="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-medium text-slate-500 dark:text-slate-400">
+        <footer className="w-full relative z-10 py-5 border-t border-white/5 bg-slate-950/40 backdrop-blur-md">
+          <div className="max-w-md mx-auto px-4 flex items-center justify-between text-xs font-medium text-slate-400">
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="font-mono text-slate-700 dark:text-slate-300">Firestore Mesh Engine:</span>
-              <span className="text-emerald-600 dark:text-emerald-400 font-semibold">100% Operational</span>
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="font-mono text-slate-300">Live Realtime</span>
             </div>
-
-            <div className="flex items-center gap-6">
-              <span className="font-mono">P2P Ephemeral Protocol</span>
-              <span>&bull;</span>
-              <span className="font-mono">4-Digit PIN Rooms</span>
-              <span>&bull;</span>
-              <span>&copy; {new Date().getFullYear()} QuickChat Inc.</span>
-            </div>
+            <span className="font-mono text-[11px]">&copy; {new Date().getFullYear()} QuickChat</span>
           </div>
         </footer>
       )}

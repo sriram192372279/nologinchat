@@ -9,13 +9,9 @@ import {
   Plus,
   Loader2,
   ExternalLink,
+  Lock,
   Zap,
-  ShieldCheck,
-  Sparkles,
-  Flame,
-  Volume2,
-  Palette,
-  Users
+  ShieldCheck
 } from 'lucide-react';
 
 export default function Home({ onCreateRoom, onJoinRoom, inviteCode }) {
@@ -52,7 +48,7 @@ export default function Home({ onCreateRoom, onJoinRoom, inviteCode }) {
     if (e) e.preventDefault();
     const cleanCode = roomCodeInput.replace(/\D/g, '').trim();
     if (!cleanCode || cleanCode.length !== 4) {
-      addToast('Please enter all 4 digits (e.g. 4829)', 'error');
+      addToast('Please enter all 4 digits', 'error');
       return;
     }
 
@@ -73,10 +69,10 @@ export default function Home({ onCreateRoom, onJoinRoom, inviteCode }) {
     try {
       await handleEnsureAuth();
       confetti({
-        particleCount: 80,
-        spread: 80,
+        particleCount: 70,
+        spread: 70,
         origin: { y: 0.6 },
-        colors: ['#6366f1', '#a855f7', '#06b6d4', '#10b981', '#f59e0b']
+        colors: ['#6366f1', '#a855f7', '#06b6d4', '#10b981']
       });
       await onCreateRoom(customRoomName.trim());
     } catch (err) {
@@ -90,7 +86,7 @@ export default function Home({ onCreateRoom, onJoinRoom, inviteCode }) {
     setAuthSubmitting(true);
     try {
       await loginWithGoogle();
-      addToast('Authenticated via Google', 'success');
+      addToast('Authenticated with Google', 'success');
     } catch (err) {
       addToast(err.message || 'Google sign-in failed.', 'error');
     } finally {
@@ -99,91 +95,74 @@ export default function Home({ onCreateRoom, onJoinRoom, inviteCode }) {
   };
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center px-4 py-8 sm:py-16 max-w-4xl mx-auto w-full relative z-10">
-      {/* ── Top Announcement Tag ───────────────────────── */}
-      <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 dark:bg-indigo-500/15 border border-indigo-500/20 text-xs font-semibold text-indigo-700 dark:text-indigo-300 mb-6 shadow-sm backdrop-blur-md animate-fade-up">
-        <span className="flex h-2 w-2 relative">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
-        </span>
-        <span className="font-mono uppercase tracking-wider text-[11px]">Instant Room Protocol v2.5</span>
-        <span className="text-slate-300 dark:text-slate-700">&bull;</span>
-        <span className="font-medium">4-Digit PIN Access</span>
-      </div>
-
-      {/* ── Hero Heading ($1000 Headline) ──────────────── */}
-      <div className="text-center mb-10 max-w-2xl mx-auto animate-fade-up" style={{ animationDelay: '0.08s' }}>
-        <h1 className="font-display font-extrabold text-4xl sm:text-5xl md:text-6xl tracking-tight text-slate-900 dark:text-white leading-[1.1]">
-          Connect Instantly. <br />
-          <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-500 bg-clip-text text-transparent">
-            Zero Friction. Pure Speed.
-          </span>
+    <div className="flex-1 flex flex-col items-center justify-center px-4 py-8 sm:py-14 max-w-md mx-auto w-full relative z-10">
+      {/* ── Simple, Clean Hero Header ─────────────────── */}
+      <div className="text-center mb-8 animate-fade-up">
+        <h1 className="font-display font-extrabold text-3xl sm:text-4xl tracking-tight text-white">
+          Quick<span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">Chat</span>
         </h1>
-        <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 mt-4 leading-relaxed font-normal">
-          Jump into high-speed private chat rooms with a simple 4-digit code. No email verification, zero app downloads, real-time live sync.
+        <p className="text-xs sm:text-sm text-slate-400 mt-2 font-medium">
+          Instant ephemeral rooms with a 4-digit code. Zero login required.
         </p>
       </div>
 
       {/* Firebase setup notice */}
       {authError && (
-        <div className="w-full max-w-lg mb-6 p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800/60 text-xs text-amber-950 dark:text-amber-200 shadow-md">
+        <div className="w-full mb-5 p-4 rounded-2xl bg-amber-950/40 border border-amber-800/60 text-xs text-amber-200 shadow-md">
           <div className="font-bold mb-1.5 flex items-center justify-between text-sm">
-            <span>Firebase Authentication Setup Required</span>
+            <span>Firebase Authentication Required</span>
             <a
               href="https://console.firebase.google.com/project/dialy-water/authentication/providers"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-1 text-indigo-600 dark:text-indigo-400 font-bold underline hover:no-underline font-mono"
+              className="inline-flex items-center gap-1 text-indigo-400 font-bold underline hover:no-underline font-mono"
             >
               Console <ExternalLink className="w-3.5 h-3.5" />
             </a>
           </div>
-          <p className="leading-relaxed opacity-95">
-            In Firebase Console &gt; Authentication &gt; Sign-in method, click <strong>Get Started</strong> and toggle <strong>Anonymous</strong> &amp; <strong>Google</strong> to ON.
+          <p className="leading-relaxed opacity-90">
+            In Firebase Console &gt; Authentication, enable <strong>Anonymous</strong> &amp; <strong>Google</strong> sign-in.
           </p>
         </div>
       )}
 
-      {/* ── Main Command Card ($1000 Glass Card) ──────── */}
-      <div className="w-full max-w-md mx-auto glass-panel rounded-3xl shadow-luxury dark:shadow-luxury overflow-hidden animate-fade-up relative" style={{ animationDelay: '0.15s' }}>
-        {/* Shimmering gradient top line */}
-        <div className="h-1 w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400" />
-
+      {/* ── Simple Main Card ─────────────────────────── */}
+      <div className="w-full glass-panel rounded-3xl shadow-luxury overflow-hidden animate-fade-up">
         {/* Navigation Tabs */}
-        <div className="flex p-2 bg-slate-100/70 dark:bg-slate-900/60 border-b border-slate-200/60 dark:border-white/5">
+        <div className="flex p-1.5 bg-slate-900/70 border-b border-white/5">
           <button
             type="button"
             onClick={() => setActiveTab('join')}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 text-xs sm:text-sm font-bold rounded-2xl transition-all duration-200 cursor-pointer ${
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-xs sm:text-sm font-bold rounded-2xl transition-all duration-150 cursor-pointer ${
               activeTab === 'join'
-                ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-md'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                ? 'bg-slate-800 text-white shadow-md'
+                : 'text-slate-400 hover:text-white'
             }`}
           >
-            <Hash className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+            <Hash className="w-4 h-4 text-indigo-400" />
             <span>Join with Code</span>
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab('create')}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 text-xs sm:text-sm font-bold rounded-2xl transition-all duration-200 cursor-pointer ${
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-xs sm:text-sm font-bold rounded-2xl transition-all duration-150 cursor-pointer ${
               activeTab === 'create'
-                ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-md'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                ? 'bg-slate-800 text-white shadow-md'
+                : 'text-slate-400 hover:text-white'
             }`}
           >
-            <Plus className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-            <span>Create New Room</span>
+            <Plus className="w-4 h-4 text-purple-400" />
+            <span>Create Room</span>
           </button>
         </div>
 
         {/* Tab Body */}
-        <div className="p-6 sm:p-7">
+        <div className="p-6">
           {activeTab === 'join' ? (
-            <form onSubmit={handleJoinSubmit} className="space-y-5">
+            <form onSubmit={handleJoinSubmit} className="space-y-4">
               <div className="text-center">
-                <label className="block text-xs font-mono font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-3">
+                <label className="block text-xs font-mono font-bold text-slate-400 uppercase tracking-wider mb-2.5">
                   Enter 4-Digit Room Code
                 </label>
                 <DigitCodeInput
@@ -198,8 +177,8 @@ export default function Home({ onCreateRoom, onJoinRoom, inviteCode }) {
 
               {!currentUser && (
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
-                    Your display nickname
+                  <label className="block text-xs font-bold text-slate-300 mb-1.5">
+                    Your nickname
                   </label>
                   <input
                     type="text"
@@ -207,7 +186,7 @@ export default function Home({ onCreateRoom, onJoinRoom, inviteCode }) {
                     onChange={(e) => setGuestNameInput(e.target.value)}
                     maxLength={25}
                     placeholder="e.g. Alex, Sam, Dev"
-                    className="w-full text-sm font-semibold py-3 px-4 rounded-xl bg-slate-50 dark:bg-slate-900/90 border border-slate-300 dark:border-white/10 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-4 focus:ring-indigo-500/10 transition-all"
+                    className="w-full text-sm font-semibold py-2.5 px-3.5 rounded-xl bg-slate-900/90 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-500/10 transition-all"
                   />
                 </div>
               )}
@@ -215,43 +194,42 @@ export default function Home({ onCreateRoom, onJoinRoom, inviteCode }) {
               <button
                 type="submit"
                 disabled={submitting || roomCodeInput.length !== 4}
-                className="w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 hover:from-indigo-700 hover:to-cyan-600 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-bold flex items-center justify-center gap-2.5 transition-all duration-150 active:scale-[0.98] cursor-pointer shadow-lg shadow-indigo-600/25"
+                className="w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 hover:from-indigo-700 hover:to-cyan-600 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-bold flex items-center justify-center gap-2 transition-all active:scale-[0.98] cursor-pointer shadow-lg shadow-indigo-600/25"
               >
                 {submitting ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
                 ) : (
                   <>
-                    <span>Enter Instant Room</span>
+                    <span>Enter Room</span>
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}
               </button>
             </form>
           ) : (
-            <form onSubmit={handleCreateSubmit} className="space-y-5">
+            <form onSubmit={handleCreateSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
-                  Room title <span className="font-normal text-slate-400">(optional)</span>
+                <label className="block text-xs font-bold text-slate-300 mb-1.5">
+                  Room title <span className="font-normal text-slate-500">(optional)</span>
                 </label>
                 <input
                   type="text"
                   value={customRoomName}
                   onChange={(e) => setCustomRoomName(e.target.value)}
                   maxLength={40}
-                  placeholder="e.g. Project Brainstorm, Coffee Chat"
+                  placeholder="e.g. Coffee Break, Team Standup"
                   autoFocus
-                  className="w-full text-sm font-semibold py-3 px-4 rounded-xl bg-slate-50 dark:bg-slate-900/90 border border-slate-300 dark:border-white/10 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-4 focus:ring-indigo-500/10 transition-all"
+                  className="w-full text-sm font-semibold py-2.5 px-3.5 rounded-xl bg-slate-900/90 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-500/10 transition-all"
                 />
-                <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-2 flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
+                <p className="text-[11px] font-medium text-slate-400 mt-1.5">
                   Generates an instant 4-digit code (e.g. #7829)
                 </p>
               </div>
 
               {!currentUser && (
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
-                    Your display nickname
+                  <label className="block text-xs font-bold text-slate-300 mb-1.5">
+                    Your nickname
                   </label>
                   <input
                     type="text"
@@ -259,7 +237,7 @@ export default function Home({ onCreateRoom, onJoinRoom, inviteCode }) {
                     onChange={(e) => setGuestNameInput(e.target.value)}
                     maxLength={25}
                     placeholder="e.g. Alex, Sam, Dev"
-                    className="w-full text-sm font-semibold py-3 px-4 rounded-xl bg-slate-50 dark:bg-slate-900/90 border border-slate-300 dark:border-white/10 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-4 focus:ring-indigo-500/10 transition-all"
+                    className="w-full text-sm font-semibold py-2.5 px-3.5 rounded-xl bg-slate-900/90 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-500/10 transition-all"
                   />
                 </div>
               )}
@@ -267,13 +245,13 @@ export default function Home({ onCreateRoom, onJoinRoom, inviteCode }) {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-bold flex items-center justify-center gap-2.5 transition-all duration-150 active:scale-[0.98] cursor-pointer shadow-lg shadow-purple-600/25"
+                className="w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-bold flex items-center justify-center gap-2 transition-all active:scale-[0.98] cursor-pointer shadow-lg shadow-purple-600/25"
               >
                 {submitting ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
                 ) : (
                   <>
-                    <span>Generate PIN &amp; Launch</span>
+                    <span>Generate Code &amp; Launch</span>
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}
@@ -284,15 +262,15 @@ export default function Home({ onCreateRoom, onJoinRoom, inviteCode }) {
 
         {/* Card Footer / Google Auth */}
         {!currentUser && (
-          <div className="px-6 py-4 border-t border-slate-200/60 dark:border-white/5 bg-slate-50/70 dark:bg-slate-950/70 flex items-center justify-between text-xs">
-            <span className="text-slate-600 dark:text-slate-400 font-medium">
-              Want verified status?
+          <div className="px-6 py-3.5 border-t border-white/5 bg-slate-950/70 flex items-center justify-between text-xs">
+            <span className="text-slate-400 font-medium">
+              Or sign in with:
             </span>
             <button
               type="button"
               onClick={handleGoogleSignIn}
               disabled={authSubmitting}
-              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border border-slate-300 dark:border-white/15 bg-white dark:bg-slate-900 text-slate-800 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-bold transition-all shadow-sm cursor-pointer"
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl border border-white/10 bg-slate-900 text-white hover:bg-slate-800 text-xs font-bold transition-all shadow-sm cursor-pointer"
             >
               {authSubmitting ? (
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -316,7 +294,7 @@ export default function Home({ onCreateRoom, onJoinRoom, inviteCode }) {
                       d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.35 0 3.27 2.57 1.25 6.58l4.03 3.1c.95-2.83 3.6-4.93 6.72-4.93z"
                     />
                   </svg>
-                  <span>Google Sign In</span>
+                  <span>Google</span>
                 </>
               )}
             </button>
@@ -324,43 +302,19 @@ export default function Home({ onCreateRoom, onJoinRoom, inviteCode }) {
         )}
       </div>
 
-      {/* ── World-Class Bento Feature Showcase ─────────── */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-3xl mt-12 animate-fade-up" style={{ animationDelay: '0.22s' }}>
-        <div className="p-5 rounded-2xl glass-panel text-left flex flex-col gap-2.5 shadow-sm hover:scale-[1.02] transition-transform duration-200">
-          <div className="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
-            <Hash className="w-5 h-5" />
-          </div>
-          <h3 className="font-display font-bold text-base text-slate-900 dark:text-white">
-            4-Digit Numeric PIN
-          </h3>
-          <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed font-normal">
-            No messy URLs, links, or hashes. Share an easy 4-digit code (e.g. #4829) anyone can type in seconds.
-          </p>
-        </div>
-
-        <div className="p-5 rounded-2xl glass-panel text-left flex flex-col gap-2.5 shadow-sm hover:scale-[1.02] transition-transform duration-200">
-          <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold">
-            <Zap className="w-5 h-5" />
-          </div>
-          <h3 className="font-display font-bold text-base text-slate-900 dark:text-white">
-            0ms Real-Time Sync
-          </h3>
-          <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed font-normal">
-            Instant bidirectional message streaming powered by Firestore live snapshot listeners. Zero lag.
-          </p>
-        </div>
-
-        <div className="p-5 rounded-2xl glass-panel text-left flex flex-col gap-2.5 shadow-sm hover:scale-[1.02] transition-transform duration-200">
-          <div className="w-10 h-10 rounded-xl bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 flex items-center justify-center font-bold">
-            <Palette className="w-5 h-5" />
-          </div>
-          <h3 className="font-display font-bold text-base text-slate-900 dark:text-white">
-            Audio &amp; Themes
-          </h3>
-          <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed font-normal">
-            Web Audio synthesized sound effects, 3 curated chat themes, confetti explosions, and quick reactions.
-          </p>
-        </div>
+      {/* Trust Badges Simple Row */}
+      <div className="flex items-center justify-center gap-4 text-xs font-mono text-slate-400 mt-6">
+        <span className="flex items-center gap-1.5">
+          <Lock className="w-3.5 h-3.5 text-slate-400" /> Private Room
+        </span>
+        <span>&bull;</span>
+        <span className="flex items-center gap-1.5">
+          <Zap className="w-3.5 h-3.5 text-emerald-400" /> Realtime
+        </span>
+        <span>&bull;</span>
+        <span className="flex items-center gap-1.5">
+          <ShieldCheck className="w-3.5 h-3.5 text-indigo-400" /> No Tracking
+        </span>
       </div>
     </div>
   );
